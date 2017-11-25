@@ -1,0 +1,24 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.sf-transit-tracker {
+  font-family: Courier New, Courier, monospace;
+  font-weight: bold;
+}
+
+.sf-map, .sf-routeList{
+  display: inline-block;
+  position: absolute !important;
+}
+
+.sf-map {
+  width: 70%;
+}
+
+.sf-routeList {
+  width: 30%;
+  left: 70%;
+}
