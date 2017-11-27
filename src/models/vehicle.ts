@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { action, observable } from "mobx";
 
 export default class Vehicle {
   public id: string;
@@ -7,10 +7,8 @@ export default class Vehicle {
   @observable public lat: string;
   @observable public lon: string;
   @observable public heading: string;
-
-  // @computed get filteredUnpackedItems() {
-  //   return this.unpackedItems.filter(item => item.value.includes(this.unpackedItemsFilter));
-  // }
+  @observable public routeColor: string;
+  @observable public visible: boolean;
 
   constructor(
     id: string = '', 
@@ -18,7 +16,7 @@ export default class Vehicle {
     dirTag: string = '', 
     lat: string = '', 
     lon: string = '', 
-    heading: string = '' 
+    heading: string = ''
   ) {
     this.id = id;
     this.routeTag = routeTag;
@@ -26,5 +24,11 @@ export default class Vehicle {
     this.lat = lat;
     this.lon = lon;
     this.heading = heading;
+    this.visible = false;
+  }
+  
+  // Un/mark vehicle as visible
+  @action.bound public toggleVisibility() {
+    this.visible = !this.visible;
   }
 }

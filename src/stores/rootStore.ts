@@ -6,7 +6,7 @@ export class RootStore {
   public routeStore: RouteStore;
   
   constructor() {
-    this.vehicleStore = new VehicleStore(this);
     this.routeStore = new RouteStore(this);
+    this.vehicleStore = new VehicleStore(this);
   }
 }

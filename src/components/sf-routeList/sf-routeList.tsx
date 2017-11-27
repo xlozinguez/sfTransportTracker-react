@@ -1,4 +1,4 @@
-import { computed, useStrict } from 'mobx';
+import { action, computed, useStrict } from 'mobx';
 import { inject, observer } from "mobx-react";
 import React, { Component } from 'react';
 
@@ -22,9 +22,14 @@ export class SfRouteList extends Component<ISfRouteListProps, any> {
   }
 
   public render() {
+    const selectedRouteCount = this.props.routeStore!.selectedRoutes.length;
+    const totalRouteCount = this.props.routeStore!.routes.length;
     return (
       <div className="sf-routeList">
-        <h1>Routes</h1>
+        <h1>
+          Routes
+          <span className="subtitle">({selectedRouteCount}/{totalRouteCount} selected)</span>
+        </h1>
         <ul>
           { this.renderRoutes() }
         </ul>
@@ -32,9 +37,29 @@ export class SfRouteList extends Component<ISfRouteListProps, any> {
     );
   }
   
+  public toggleSelected(route: Route) {
+    this.props.routeStore!.toggleRouteSelected(route);
+  }
+
   private renderRoutes = () => {
-    return this.routes ? this.routes.map((r: Route) => {
-      return (<li key={r.tag}> { r.tag } - { r.title } - {r.stops.length} </li>)
-    }) : null
+    return this.routes.map((r: Route) => {
+      return (
+        <li 
+          className={"route " + (r.selected ? "selected" : "")}
+          key={r.tag}
+          onClick={this.toggleSelected.bind(this, r)}> 
+            <span 
+              className="route-tag" 
+              style={{ 
+                backgroundColor: `#${r.color}`,
+                borderColor: `#${r.oppositeColor}`
+              }}>{ r.tag }</span>
+            <span 
+              className="route-title"
+              dangerouslySetInnerHTML={{ __html: r.title }} />
+            ({r.stops.length})
+        </li>
+      )
+    });
   }
 }

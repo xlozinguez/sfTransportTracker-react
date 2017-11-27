@@ -5,8 +5,9 @@ import ReactDOM from 'react-dom';
 
 const GMAPS_API_KEY = 'YOUR_GMAPS_API_KEY_HERE';
 
-import Vehicle from '../../models/vehicle';
-import VehicleStore from '../../stores/vehicleStore';
+import RouteStore from '../../stores/routeStore';
+
+import { SfVehicleList } from '../sf-vehicleList/sf-vehicleList';
 
 import './sf-map.css';
 
@@ -14,11 +15,11 @@ useStrict(true);
 
 interface ISfMapProps {
   latitude: string, 
-  longitude: string, 
-  vehicleStore?: VehicleStore
+  longitude: string,
+  routeStore?: RouteStore
 }
 
-@inject("vehicleStore")
+@inject("routeStore")
 @observer
 export class SfMap extends Component<ISfMapProps , any> {
   public mapEl: HTMLElement;
@@ -26,48 +27,36 @@ export class SfMap extends Component<ISfMapProps , any> {
   @observable public mapLoaded: boolean = false;
   
   public map: null;
-
-  constructor (props: any) {
-    super(props);
-    autorun(() => {
-      console.log('autorun: ', this.mapLoaded);
-      if (this.mapLoaded) {
-        this.displayVehicles();
-      }
-    })
-  }
   
   @action.bound public toggleMapState() {
-    console.log('toggleMapState');
     this.mapLoaded = !this.mapLoaded;
   }
   
-  @computed public get vehicles() {
-    return this.props.vehicleStore!.vehicles;
-  }
-  
   public componentWillMount() {
-    console.log('componentDidWillMount');
     this.initMap();
   }
 
   public componentDidMount() {
-    console.log('componentDidMount');
-    this.mapEl = ReactDOM.findDOMNode(this) as HTMLElement;
+    this.mapEl = ReactDOM.findDOMNode(this).firstElementChild as HTMLElement;
     this.loadMap();
   }
 
   public render() {
     return (
-      <div className="sf-map">
-        The map could not be loaded.
+      <div>
+        <div className="sf-map">
+          Loading map...
+        </div>
+        { 
+          this.mapLoaded && 
+          <SfVehicleList map={this.map} />
+        }
       </div>
     );
   }
   
   // Initialize google map script
   private initMap = () => {
-    console.log('SfMap: initMap');
     const gMapsScript = document.createElement('script');
     gMapsScript.setAttribute('async', '');
     gMapsScript.setAttribute('defer', '');
@@ -77,7 +66,6 @@ export class SfMap extends Component<ISfMapProps , any> {
 
   // Load map and set to the current position
   private loadMap = () => {
-    console.log('SfMap: loadMap');
     let timeout = null;
     // Check for map being loaded
     if (!window.hasOwnProperty('google')) {
@@ -93,24 +81,9 @@ export class SfMap extends Component<ISfMapProps , any> {
       const latlng = new (window as any).google.maps.LatLng(+this.props.longitude,+this.props.latitude);
       this.map = new (window as any).google.maps.Map(this.mapEl, {
         center: latlng,
-        zoom: 13
+        zoom: 12
       });
       this.toggleMapState();
     }
-  }
-
-  // display vehicles on the map
-  private displayVehicles = () => {
-    console.log('SfMap: displayVehicles', this.vehicles.length);
-    this.vehicles.forEach(v => {
-      return new (window as any).google.maps.Marker({
-        label: `${v.id}`,
-        map: this.map,
-        position: {
-          lat: +v.lat,
-          lng: +v.lon
-        }
-      })
-    });
   }
 }

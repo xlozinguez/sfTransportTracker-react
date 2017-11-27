@@ -1,7 +1,6 @@
-import { observable } from "mobx";
+import { action, observable } from "mobx";
 
 import Stop from "./stop";
-import Vehicle from "./vehicle";
 
 export default class Route {
   public tag: string;
@@ -13,8 +12,8 @@ export default class Route {
   public latMax: string;
   public lonMin: string;
   public lonMax: string;
+  @observable public selected: boolean = false;
   @observable public stops: Stop[];
-  @observable public vehicleList: Vehicle[];
 
   constructor(
     tag: string = '', 
@@ -37,6 +36,10 @@ export default class Route {
     this.lonMin = lonMin;
     this.lonMax = lonMax;
     this.stops = [];
-    this.vehicleList = []; // vehicleList.getVehiclesForRoute(this.tag);
+  }
+  
+  // Un/mark route as selected
+  @action.bound public toggleSelected() {
+    this.selected = !this.selected;
   }
 }

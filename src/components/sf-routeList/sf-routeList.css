@@ -2,8 +2,41 @@
   height: 100%;
   width: 100%;
   overflow-y: scroll;
+  padding: 10px;
 }
 
-.routeList {
-  padding: 5px;
+.sf-routeList > h1 > span.subtitle {
+  display: inline-block;
+  font-size: 50%;
+  margin-left: 5px;
+}
+
+.sf-routeList > ul {
+  padding-left: 10px;
+}
+
+.route {
+  list-style-type: none;
+  color: lightgrey;
+  font-weight: lighter;
+}
+
+.route > .route-tag {
+  display: inline-block;
+  color: white;
+  border-width: thin;
+  border-style: solid;
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.route > .route-title {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.route.selected {
+  color: black;
+  font-weight: normal;
 }
