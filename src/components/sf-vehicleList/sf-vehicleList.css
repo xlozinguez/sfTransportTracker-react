@@ -1,0 +1,35 @@
+.sf-vehicleList > .no-route-selected {
+  visibility: visible;
+  opacity: 1;
+  z-index: 1000;
+  position: fixed;
+  height: 100%;
+  width: 70%; /* TODO: not ideal, change this */
+  transition: all 0.5s linear;
+}
+
+.sf-vehicleList > .no-route-selected::before {
+  display: block;
+  position: fixed;
+  height: 100%;
+  width: 70%;
+  content: ".";
+  background-color: whitesmoke;
+  opacity: .8;
+}
+
+.sf-vehicleList > .no-route-selected > span {
+  display: block;
+  margin: 0 auto;
+  color: black;
+  position: relative;
+  top: 50%;
+  text-align: center;
+  font-size: 120%;
+  font-weight: bolder;
+}
+
+.sf-vehicleList > .no-route-selected.hidden {
+  visibility: hidden;
+  opacity: 0;
+}

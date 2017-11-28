@@ -44,12 +44,9 @@ export default class VehicleStore {
       // if not, create a new vehicle and add it in the array
       this.vehicles.push(new Vehicle(vehicleObj));
     }
-    // TODO: remove vehicles that are not part of the response anymore
   }
 
   private fetchVehicleLocations() {
-    console.log('Fetching vehicle locations');
-
     nextBusService
       .getVehicleLocations() 
       .then((vehicleObjs: IVehicle[]) => {

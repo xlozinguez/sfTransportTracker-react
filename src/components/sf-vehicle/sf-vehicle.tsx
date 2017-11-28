@@ -23,7 +23,6 @@ export class SfVehicle extends Component<ISfVehicleProps , any> {
   // Reaction triggered upon vehicle location change
   public locationUpdateReaction = reaction(
     () => {
-      console.log(`Vehicle ${this.props.vehicle.id} - ${this.props.vehicle.routeTag} has moved to ${this.props.vehicle.lat} & ${this.props.vehicle.lon}`)
       return {
         lat: +this.props.vehicle.lat,
         lng: +this.props.vehicle.lon

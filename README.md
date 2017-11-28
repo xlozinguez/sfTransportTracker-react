@@ -2,6 +2,16 @@
 
 Using [Google Maps](https://developers.google.com/maps/) and [NextBus](http://www.nextbus.com/xmlFeedDocs/NextBusXMLFeed.pdf) API, fetch the vehicle's positions for the `sf-muni` agency. Update those positions every 15 seconds.
 
+## Tech Stack
+- [React](https://reactjs.org/docs) with [Typescript](https://www.typescriptlang.org/) and [JSX](https://reactjs.org/docs/jsx-in-depth.html)
+- [Mobx](https://mobx.js.org/) - https://mobx.js.org/
+
+## Personal Take Away
+- Mobx implementation of the observable pattern is very different than what an observable is
+- Store composition is not very evident (probably more to learn on that end - see challenge with fetching routeColor for a vehicle)
+- **KEY TAKEAWAY**: "`MobX only tracks synchronously accessed data`" from ["What does MobX react to?"
+](https://mobx.js.org/best/react.html)
+
 ## Architecture
 
 ### Objects
@@ -30,10 +40,15 @@ Using [Google Maps](https://developers.google.com/maps/) and [NextBus](http://ww
 
 ### Components
 - sf-map
-- sf-vehicle
-- sf-route
-    - sf-route-stop-list
-    - sf-stop
+- sf-vehicleList
+    - sf-vehicle
+- sf-routeList
+    - sf-route
+
+### Stores
+- rootStore
+    - routeStore
+    - vehicleStore
 
 ### Services
 - nextBus-service
@@ -41,26 +56,38 @@ Using [Google Maps](https://developers.google.com/maps/) and [NextBus](http://ww
 ## App Workflow
 
 ### Upon app initialization
-- initialize the **`sf-map`** component
+- fetch **sf-muni** agency routes configuration
 - fetch **sf-muni** agency vehicles position
-- display visible transport position using the **`sf-vehicle`** component
+- initialize the **sf-map** component
+    - setup **sf-vehicleList** component to handle list of vehicles
+    - display each **sf-vehicle** upon loading the **vehicleStore**
+- initialize the **sf-routeList** component
+    - display each **sf-route** upon loading the **routeStore**
 
 ### Vehicule position update
 - every 15 seconds, fetch positions for visible vehicle on the map
 
-## Use Cases
+## Usage
 
-### Main
+### Start
+- Clone the repo
+- Install npm dependencies using the `$ npm install` command
+- In the **[sf-map](/src/components/sf-map/sf-map.tsx#L6)** component definition file, replace the `GMAPS_API_KEY` with yours (see [Get Api Key](https://developers.google.com/maps/documentation/javascript/get-api-key) to find out how to get your own gmap  api key)
+- Finally run `npm start` and open the [http://localhost:3000](http://localhost:3000) url in your browser
 
-- [ ] if the user resize the map, refresh the position of displayed vehicle
-- [ ] if the user selects a subset of available routes, only display the vehicle for the selected routes
+### UX
+- Select/Deselect the routes that you want to track vehicles of by click on them
+- Observe markers being updated every 15 seconds
 
-### Nice to haves
+![SF Transit Tracker](/demo.gif)
 
-- [ ] if the user hover over or click onto a given transport:
-    - [ ] filter out the other routes and vehicle
-    - [ ] provide some info regarding the selected transport (route info, previous stop info, next stop info)
-    - [ ] trace the route on the map
+### TO-DO
+ - [ ] Unit tests (*Lord forgive me for i have sinned*)
+ - [ ] Enhance UX transition for vehicles between location updates (see [a great example](http://jsfiddle.net/pmrotule/9tfq5sqc/8/))
+ - [ ] Enhance Marker display
+ - [ ] Better code documentation?
+ - [ ] Remove vehicle when stalled
+ - [ ] See how to reproduce the same output [in Stencil](https://github.com/xlozinguez/sfTransportTracker-react) (aborted due to store injection obstacle that can be resolved I am sure)
 
 ## Useful API details
 
@@ -72,7 +99,6 @@ Using [Google Maps](https://developers.google.com/maps/) and [NextBus](http://ww
     - includes the extent of the route (helpful to filter out a route that is out of scope)
 - ***vehicleLocations*** (`http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=<agency_tag>&r=<route tag>&t=<epoch time in msec>`):
     -  obtains a list of vehicle locations **that have changed** since the last time the vehicleLocations command was used
-    - 
 
 ### Google Maps - https://developers.google.com/maps/
 - To be able to use the google maps api, one will need to get an API key issued. See [Get Api Key](https://developers.google.com/maps/documentation/javascript/get-api-key)

@@ -9,12 +9,12 @@ body {
   font-weight: bold;
 }
 
-.sf-map, .sf-routeList{
+.sf-map, .sf-routeList, .sf-vehicleList{
   display: inline-block;
   position: absolute !important;
 }
 
-.sf-map {
+.sf-map, .sf-vehicleList {
   width: 70%;
 }
 
