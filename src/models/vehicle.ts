@@ -1,6 +1,15 @@
 import { action, observable } from "mobx";
 
-export default class Vehicle {
+export interface IVehicle {
+  id: string,
+  routeTag: string,
+  dirTag: string,
+  lat: string,
+  lon: string,
+  heading: string,
+}
+
+export default class Vehicle implements IVehicle {
   public id: string;
   @observable public routeTag: string;
   @observable public dirTag: string;
@@ -10,25 +19,27 @@ export default class Vehicle {
   @observable public routeColor: string;
   @observable public visible: boolean;
 
-  constructor(
-    id: string = '', 
-    routeTag: string = '', 
-    dirTag: string = '', 
-    lat: string = '', 
-    lon: string = '', 
-    heading: string = ''
-  ) {
-    this.id = id;
-    this.routeTag = routeTag;
-    this.dirTag = dirTag;
-    this.lat = lat;
-    this.lon = lon;
-    this.heading = heading;
+  constructor(vehicleObj: IVehicle) {
+    this.id = vehicleObj.id;
+    this.routeTag = vehicleObj.routeTag;
+    this.dirTag = vehicleObj.dirTag;
+    this.lat = vehicleObj.lat;
+    this.lon = vehicleObj.lon;
+    this.heading = vehicleObj.heading;
     this.visible = false;
   }
   
   // Un/mark vehicle as visible
   @action.bound public toggleVisibility() {
     this.visible = !this.visible;
+  }
+  
+  // Update vehicle information
+  @action.bound public updateVehicle(vehicleObj: IVehicle) {
+    this.routeTag = vehicleObj.routeTag;
+    this.dirTag = vehicleObj.dirTag;
+    this.lat = vehicleObj.lat;
+    this.lon = vehicleObj.lon;
+    this.heading = vehicleObj.heading;
   }
 }

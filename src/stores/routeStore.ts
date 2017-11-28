@@ -46,7 +46,8 @@ export default class RouteStore {
     this.rootStore = rootStore;
 
     // load up routes
-    nextBusService.getRoutes()
+    nextBusService
+      .getRoutes()
       .then((routes: Route[]) => {
         routes.forEach((route: Route) => {
           this.addRoute(route);
@@ -61,7 +62,6 @@ export default class RouteStore {
 
   // toggle indicator that routes have been loaded
   @action.bound public toggleRouteStoreLoaded() {
-    // console.log('Route Store loaded!');
     this.routeStoreLoaded = !this.routeStoreLoaded;
   }
 

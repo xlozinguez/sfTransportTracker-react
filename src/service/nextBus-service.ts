@@ -2,7 +2,7 @@ import parse from 'xml-parser';
 
 import Route from "../models/route";
 import Stop from "../models/stop";
-import Vehicle from "../models/vehicle";
+import { IVehicle } from "../models/vehicle";
 
 const NEXT_BUS_URL = "http://webservices.nextbus.com/service/publicXMLFeed";
 const DEFAULT_AGENCY = "sf-muni";
@@ -62,7 +62,7 @@ class NextBusService {
     });
   }
 
-  public getVehicleLocations(routeTag?: string): Promise<Vehicle[]> {
+  public getVehicleLocations(routeTag?: string): Promise<IVehicle[]> {
     let vehicleLocationsRequest = `${NEXT_BUS_URL}?command=${NEXT_BUS_COMMAND.vehicleLocations}&a=${DEFAULT_AGENCY}`;
     if(routeTag) {
       vehicleLocationsRequest += `&r=${routeTag}`
@@ -75,25 +75,25 @@ class NextBusService {
       return results.text();
     })
     .then(xmlVehicleLocationsData => {
-      const vehicleList: Vehicle[] = [];
+      const vehicleObjList: IVehicle[] = [];
       
       const xmlParser = parse(xmlVehicleLocationsData);
       
       xmlParser.root.children
         .filter(c => c.name === "vehicle")
         .forEach(vehicleInfo => {
-          const newVehicle = new Vehicle(
-            vehicleInfo.attributes.id,
-            vehicleInfo.attributes.routeTag,
-            vehicleInfo.attributes.dirTag,
-            vehicleInfo.attributes.lat,
-            vehicleInfo.attributes.lon,
-            vehicleInfo.attributes.heading
-          );
-          vehicleList.push(newVehicle);
+          const newVehicleInfo: IVehicle = {
+            dirTag: vehicleInfo.attributes.dirTag,
+            heading: vehicleInfo.attributes.heading,
+            id: vehicleInfo.attributes.id,
+            lat: vehicleInfo.attributes.lat,
+            lon: vehicleInfo.attributes.lon,
+            routeTag: vehicleInfo.attributes.routeTag
+          };
+          vehicleObjList.push(newVehicleInfo);
         });
         
-      return vehicleList;
+      return vehicleObjList;
     })
     .catch((err) => {
       console.error(err);

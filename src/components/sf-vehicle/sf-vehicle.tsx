@@ -14,10 +14,22 @@ interface ISfVehicleProps {
 export class SfVehicle extends Component<ISfVehicleProps , any> {
   public marker = null;
 
-  // Reaction triggered upon visibility change
+  // Reaction triggered upon vehicle visibility change
   public visibilityUpdateReaction = reaction(
     () => this.props.vehicle.visible,
     (visibility: boolean) => this.updateVehicleVisibility(visibility)
+  );
+  
+  // Reaction triggered upon vehicle location change
+  public locationUpdateReaction = reaction(
+    () => {
+      console.log(`Vehicle ${this.props.vehicle.id} - ${this.props.vehicle.routeTag} has moved to ${this.props.vehicle.lat} & ${this.props.vehicle.lon}`)
+      return {
+        lat: +this.props.vehicle.lat,
+        lng: +this.props.vehicle.lon
+      }
+    },
+    (position: {lat: number, lng: number}) => this.updateVehiclePosition(position.lat, position.lng)
   );
 
   public componentWillMount() {
@@ -45,5 +57,7 @@ export class SfVehicle extends Component<ISfVehicleProps , any> {
     });
   }
 
-  private updateVehicleVisibility = (visible: boolean) => (this.marker as any).setVisible(visible)
+  private updateVehicleVisibility = (visible: boolean) => (this.marker as any).setVisible(visible);
+
+  private updateVehiclePosition = (lat: number, lng: number) => (this.marker as any).setPosition({ lat, lng });
 }

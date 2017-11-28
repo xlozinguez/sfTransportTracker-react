@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 const GMAPS_API_KEY = 'YOUR_GMAPS_API_KEY_HERE';
 
 import RouteStore from '../../stores/routeStore';
+import VehicleStore from '../../stores/vehicleStore';
 
 import { SfVehicleList } from '../sf-vehicleList/sf-vehicleList';
 
@@ -16,10 +17,11 @@ useStrict(true);
 interface ISfMapProps {
   latitude: string, 
   longitude: string,
-  routeStore?: RouteStore
+  routeStore?: RouteStore,
+  vehicleStore?: VehicleStore
 }
 
-@inject("routeStore")
+@inject("routeStore", "vehicleStore")
 @observer
 export class SfMap extends Component<ISfMapProps , any> {
   public mapEl: HTMLElement;
@@ -34,6 +36,11 @@ export class SfMap extends Component<ISfMapProps , any> {
   
   public componentWillMount() {
     this.initMap();
+  }
+
+  public componentWillUnmount() {
+    // remove interval timer when the component unmounts
+    clearInterval(this.props.vehicleStore!.vehicleLocationsRefreshTimer);
   }
 
   public componentDidMount() {

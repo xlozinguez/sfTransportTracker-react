@@ -1,7 +1,7 @@
 import { action, computed, createTransformer, observable } from 'mobx';
 
 import Route from '../models/route';
-import Vehicle from '../models/vehicle';
+import Vehicle, { IVehicle } from '../models/vehicle';
 
 import { RootStore } from './rootStore';
 
@@ -9,6 +9,7 @@ import nextBusService from '../service/nextBus-service';
 
 export default class VehicleStore {
   public rootStore: RootStore;
+  public vehicleLocationsRefreshTimer: any = null;
   @observable public vehicles: Vehicle[] = [];
   @observable public vehicleStoreLoaded: boolean = false;
 
@@ -22,30 +23,46 @@ export default class VehicleStore {
     // save reference to rootStore
     this.rootStore = rootStore;
     
-    // load up routes
-    nextBusService.getVehicleLocations() 
-        .then((vehicles: Vehicle[]) => {
-          vehicles.forEach((vehicle: Vehicle) => {
-            // TODO: load vehicles after routes have been loaded (could leverage side effects)
-            // vehicle.routeColor = this.rootStore.routeStore.getColorOfRoute(vehicle.routeTag);
-            this.addVehicle(vehicle);
-          });
-          this.toggleVehicleStoreLoaded();
-        })
-        .catch((err) => {
-          console.error(err);
-          return;
-        });
+    this.fetchVehicleLocations();
+
+    // load up routes and refresh every 15 seconds
+    this.vehicleLocationsRefreshTimer = setInterval(() => this.fetchVehicleLocations(), 15000);
   }
   
   // toggle indicator that vehicles have been loaded
   @action.bound public toggleVehicleStoreLoaded() {
-    // console.log('Vehicle Store loaded!');
     this.vehicleStoreLoaded = !this.vehicleStoreLoaded;
   }
 
-  // add new vehicle to list
-  @action.bound public addVehicle(newVehicle: Vehicle) {
-    this.vehicles.push(newVehicle);
+  // add vehicle to the list or update with the new values
+  @action.bound public addorUpdateVehicle(vehicleObj: IVehicle) {
+    const vehicle = this.vehicles.filter((v: Vehicle) => v.id === vehicleObj.id);
+    if (vehicle.length) {
+      // if the vehicle already exists, update its information
+      vehicle[0].updateVehicle(vehicleObj);
+    } else {
+      // if not, create a new vehicle and add it in the array
+      this.vehicles.push(new Vehicle(vehicleObj));
+    }
+    // TODO: remove vehicles that are not part of the response anymore
+  }
+
+  private fetchVehicleLocations() {
+    console.log('Fetching vehicle locations');
+
+    nextBusService
+      .getVehicleLocations() 
+      .then((vehicleObjs: IVehicle[]) => {
+        vehicleObjs.forEach((vehicleObj: IVehicle) => {
+          // TODO: load vehicles after routes have been loaded (could leverage side effects)
+          // vehicle.routeColor = this.rootStore.routeStore.getColorOfRoute(vehicle.routeTag);
+          this.addorUpdateVehicle(vehicleObj);
+        });
+        this.toggleVehicleStoreLoaded();
+      })
+      .catch((err) => {
+        console.error(err);
+        return;
+      });
   }
 }
